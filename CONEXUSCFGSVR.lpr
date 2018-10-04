@@ -237,7 +237,6 @@ begin
     begin
       CODEList:='<input type="radio" id="ALL" name="CODE" value="ALL" checked><label for="ALL"> ALL</label><input type="radio" id="SAT1" name="CODE" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE" value="TV2"><label for="TV2"> TV2</label>';
     end;
-  CODEList:='<h2>Remote code</h2>'+CODEList;
 
   //Create full HTML page and write the document to the output stream
   if Uri='/' then
@@ -245,12 +244,13 @@ begin
       OutputDataString :=
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"'
         + ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' + CRLF
-        + '<html><head>' + CRLF
-        + '<style>body {font-family: Verdana, Arial, Helvetica, sans-serif} fieldset {padding-top:10px; border:1px solid #000035;	border-radius:8px; box-shadow:0 0 10px #000035;}</style></head>' + CRLF
+        + '<html><head><title>CONEXUS Configuration ('+BaseUri+')</title>' + CRLF
+        + '<style>body {font-family: Verdana, Arial, Helvetica, sans-serif; background-color:#FBFBFF; } fieldset {padding-top:10px; border:1px solid #000035;	border-radius:8px; box-shadow:0 0 10px #000035;}' + CRLF
+        + '</style></head>' + CRLF
         + '<center><h1><u><b>CONEXUS Configuration ('+BaseUri+')</b></u></h1><h2>Please set up the preferred IR remote code and the URL/PIN to your network device</h2></center>' + CRLF
         + '<br><br><br>' + CRLF
         + '<form><center>' + CRLF
-        + '<fieldset>' + CODEList + '</fieldset><br>' + CRLF
+        + '<fieldset><h2>Remote Code</h2>' + CODEList + '</fieldset><br>' + CRLF
         + '<fieldset><label for="URL"><h2>Device URL</h2></label><input type="text" size="64" maxlength="128" id="URL" name="URL" value="'+URL+'"></fieldset><br>' + CRLF
         + '<fieldset><label for="PIN"><h2>Device PIN</h2></label><input type="text" size="4" maxlength="4" id="PIN" name="PIN" value="'+PIN+'"></fieldset><br>' + CRLF;
       //use update banner or update button
