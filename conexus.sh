@@ -3,11 +3,12 @@
 #CONEXUS CONFIGURATION. EDIT WITH CARE!
 #-------------------------------------------------------
 # allowed remote codes: SAT1 SAT2 TV1 VCR1 VCR2 TV2 ALL
-CODE=SAT2
-# allowed URLs: IP or local domainname for e.g. audiomaster-mr3.fritz.box
-URL=192.168.0.37
+code=SAT2
+# allowed URLs: IP or local domainname for e.g. radio.fritz.box
+#url=AudioMaster-MR3
+url=192.168.0.37
 # allow PINs: 4-digit numeric (default PIN should be 1234)
-PIN=1234
+pin=1234
 
 #-------------------------------------------------------
 #DO NOT CHANGE ANYTHING BELOW THIS LINE!!!

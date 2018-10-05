@@ -127,7 +127,7 @@ begin
         begin
           if LeftStr(UpperCase(SCRIPT.Strings[Index]),5)='CODE=' then
             begin
-              SCRIPT.Strings[Index]:='CODE='+CODE;
+              SCRIPT.Strings[Index]:='code='+CODE;
               break;
             end;
         end;
@@ -136,7 +136,7 @@ begin
         begin
           if LeftStr(UpperCase(SCRIPT.Strings[Index]),4)='URL=' then
             begin
-              SCRIPT.Strings[Index]:='URL='+URL;
+              SCRIPT.Strings[Index]:='url='+URL;
               break;
             end;
         end;
@@ -145,7 +145,7 @@ begin
         begin
           if LeftStr(UpperCase(SCRIPT.Strings[Index]),4)='PIN=' then
             begin
-              SCRIPT.Strings[Index]:='PIN='+PIN;
+              SCRIPT.Strings[Index]:='pin='+PIN;
               break;
             end;
         end;
