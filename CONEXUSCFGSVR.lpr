@@ -16,7 +16,7 @@ program CONEXUSCFGSVR;
 //http://wiki.freepascal.org/Networking#Webserver_example
 
 //define program basics
-{$DEFINE PROGVERSION:='1.0'}
+{$DEFINE PROGVERSION:='1.1'}
 //{$DEFINE PROG_DEBUG}
 {___________________________________________________________}
 
