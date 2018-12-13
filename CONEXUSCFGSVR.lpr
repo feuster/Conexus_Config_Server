@@ -95,12 +95,16 @@ var
   URL:              String;
   PIN:              String;
   CODE:             String;
+  CODE2:            String;
   CODEList:         String;
+  CODEList2:        String;
   BANNER:           String;
+  BANNERMSG:        String;
   Index:            Integer;
 
 begin
   Timeout:=120000;
+  BANNERMSG:='';
 
   //read request line
   Buffer:=ASocket.RecvString(Timeout);
@@ -116,6 +120,7 @@ begin
       //read GET variables
       Uri:=UpperCase(Uri);
       CODE:=StringReplace(fetch(Uri, '&'),'/?CODE=', '', [rfReplaceAll,rfIgnoreCase]);
+      CODE2:=StringReplace(fetch(Uri, '&'),'CODE2=', '', [rfReplaceAll,rfIgnoreCase]);
       URL:=StringReplace(fetch(Uri, '&'),'URL=', '', [rfReplaceAll,rfIgnoreCase]);
       PIN:=StringReplace(fetch(Uri, ''),'PIN=', '', [rfReplaceAll,rfIgnoreCase]);
 
@@ -131,6 +136,26 @@ begin
               break;
             end;
         end;
+      //write remote code 2
+      if (CODE2=CODE) then
+        begin
+          BANNERMSG:='Hint: Music Player Daemon can not use Conexus remote code!<br>';
+          CODE2:='OFF';
+        end;
+      if (CODE='ALL') and (CODE2<>'OFF') then
+        begin
+          BANNERMSG:='Hint: Music Player Daemon can not use a code when Conexus remote code is set to ALL!<br>';
+          CODE2:='OFF';
+        end;
+      for Index:=0 to SCRIPT.Count-1 do
+        begin
+          if LeftStr(UpperCase(SCRIPT.Strings[Index]),6)='CODE2=' then
+            begin
+              SCRIPT.Strings[Index]:='code2='+CODE2;
+              break;
+            end;
+        end;
+
       //write device URL
       for Index:=0 to SCRIPT.Count-1 do
         begin
@@ -153,7 +178,7 @@ begin
       //save updated bash script and create info banner
       try
       SCRIPT.SaveToFile(SCRIPTPATH);
-      BANNER:='<div id="banner"><fieldset style="background-color:#009900;"><h2><center>New configuration saved!</h2></center></fieldset></div><script>setTimeout(function(){ document.getElementById(''banner'').innerHTML = ''''; window.location = window.location.pathname; }, 3000); </script>';
+      BANNER:='<div id="banner"><fieldset style="background-color:#009900;"><h2><center>'+BANNERMSG+'New configuration saved!</h2></center></fieldset></div><script>setTimeout(function(){ document.getElementById(''banner'').innerHTML = ''''; window.location = window.location.pathname; }, 3000); </script>';
       WriteLn(STR_Info,'"'+SCRIPTPATH+'" updated');
       except
       BANNER:='<div id="banner"><fieldset style="background-color:#990000;"><h2><center>New configuration could not be saved!</h2></center></fieldset></div><script>setTimeout(function(){ document.getElementById(''banner'').innerHTML = ''''; window.location = window.location.pathname; }, 3000); </script>';
@@ -175,12 +200,22 @@ begin
       URL:='Please enter the device IP or domain name';
       PIN:='1234';
       CODE:='ALL';
+      CODE2:='OFF';
       //read remote code
       for Index:=0 to SCRIPT.Count-1 do
         begin
           if LeftStr(UpperCase(SCRIPT.Strings[Index]),5)='CODE=' then
             begin
               CODE:=UpperCase(MidStr(SCRIPT.Strings[Index],6,Length(SCRIPT.Strings[Index])-5));
+              break;
+            end;
+        end;
+      //read remote code 2
+      for Index:=0 to SCRIPT.Count-1 do
+        begin
+          if LeftStr(UpperCase(SCRIPT.Strings[Index]),6)='CODE2=' then
+            begin
+              CODE2:=UpperCase(MidStr(SCRIPT.Strings[Index],7,Length(SCRIPT.Strings[Index])-6));
               break;
             end;
         end;
@@ -204,7 +239,7 @@ begin
         end;
     end;
 
-  //create HTML output part for remote selection
+  //create HTML output part for Conexus remote selection
   if CODE='ALL' then
     begin
       CODEList:='<input type="radio" id="ALL" name="CODE" value="ALL" checked><label for="ALL"> ALL</label><input type="radio" id="SAT1" name="CODE" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE" value="TV2"><label for="TV2"> TV2</label>';
@@ -238,6 +273,40 @@ begin
       CODEList:='<input type="radio" id="ALL" name="CODE" value="ALL" checked><label for="ALL"> ALL</label><input type="radio" id="SAT1" name="CODE" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE" value="TV2"><label for="TV2"> TV2</label>';
     end;
 
+  //create HTML output part for Conexus remote selection
+  if CODE2='OFF' then
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF" checked><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2"><label for="TV2"> TV2</label>';
+    end
+  else if CODE2='SAT1' then
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF"><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1" checked><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2"><label for="TV2"> TV2</label>';
+    end
+  else if CODE2='SAT2' then
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF"><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2" checked><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2"><label for="TV2"> TV2</label>';
+    end
+  else if CODE2='VCR1' then
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF"><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1" checked><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2"><label for="TV2"> TV2</label>';
+    end
+  else if CODE2='VCR2' then
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF"><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2" checked><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2"><label for="TV2"> TV2</label>';
+    end
+  else if CODE2='TV1' then
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF"><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1" checked><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2"><label for="TV2"> TV2</label>';
+    end
+  else if CODE2='TV2' then
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF"><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2" checked><label for="TV2"> TV2</label>';
+    end
+  else
+    begin
+      CODEList2:='<input type="radio" id="OFF" name="CODE2" value="OFF" checked><label for="OFF"> OFF</label><input type="radio" id="SAT1" name="CODE2" value="SAT1"><label for="SAT1"> SAT1</label><input type="radio" id="SAT2" name="CODE2" value="SAT2"><label for="SAT2"> SAT2</label><input type="radio" id="VCR1" name="CODE2" value="VCR1"><label for="VCR1"> VCR1</label><input type="radio" id="VCR2" name="CODE2" value="VCR2"><label for="VCR2"> VCR2</label><input type="radio" id="TV1" name="CODE2" value="TV1"><label for="TV1"> TV1</label><input type="radio" id="TV2" name="CODE2" value="TV2"><label for="TV2"> TV2</label>';
+    end;
+
   //Create full HTML page and write the document to the output stream
   if Uri='/' then
     begin
@@ -250,9 +319,11 @@ begin
         + '<center><h1><u><b>CONEXUS Configuration ('+BaseUri+')</b></u></h1><h2>Please set up the preferred IR remote code and the URL/PIN to your network device</h2></center>' + CRLF
         + '<br><br><br>' + CRLF
         + '<form><center>' + CRLF
-        + '<fieldset><h2>Remote Code</h2>' + CODEList + '</fieldset><br>' + CRLF
+        + '<fieldset><h2>Remote Code (CONEXUS)</h2>' + CODEList + '</fieldset><br>' + CRLF
+        + '<fieldset><h2>Remote Code (Music Player Daemon)</h2>' + CODEList2 + '</fieldset><br>' + CRLF
         + '<fieldset><label for="URL"><h2>Device URL</h2></label><input type="text" size="64" maxlength="128" id="URL" name="URL" value="'+URL+'"></fieldset><br>' + CRLF
         + '<fieldset><label for="PIN"><h2>Device PIN</h2></label><input type="text" size="4" maxlength="4" id="PIN" name="PIN" value="'+PIN+'"></fieldset><br>' + CRLF;
+
       //use update banner or update button
       if Banner<>'' then
         begin
